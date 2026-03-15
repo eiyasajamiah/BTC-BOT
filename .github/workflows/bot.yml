@@ -39,6 +39,7 @@ jobs:
             "TELEGRAM_CHAT_ID": "$TELEGRAM_CHAT_ID",
             "CLAUDE_API_KEY":  "$CLAUDE_API_KEY",
             "CLAUDE_PROVIDER": "$CLAUDE_PROVIDER",
+            "CLAUDE_MODEL":    "claude-sonnet-4-6",
             "SYMBOL": "BTC-USD",
             "DXY_SYMBOL": "DX-Y.NYB",
             "RUN_INTERVAL_MIN": 1,
@@ -68,6 +69,7 @@ jobs:
             "TRIGGER_FORCE_EVERY_MIN": 5
           }
           CFGEOF
+          echo "✅ Config built | Provider=$CLAUDE_PROVIDER | Key=${#CLAUDE_API_KEY} chars"
 
       - name: 💾 Restore State
         uses: actions/cache@v4
@@ -82,7 +84,7 @@ jobs:
       - name: 📁 Directories
         run: mkdir -p charts logs
 
-      - name: 🚀 Run Bot
+      - name: 🚀 Run البيتكوين Bot
         run: timeout 240 python bitcoin_bot.py || true
         env:
           PYTHONUNBUFFERED: "1"
