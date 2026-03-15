@@ -1,0 +1,6 @@
+requests>=2.31.0
+pandas>=2.0.0
+numpy>=1.24.0
+yfinance>=0.2.36
+matplotlib>=3.7.0
+urllib3>=2.0.0
