@@ -52,7 +52,7 @@ if fmt == "openai":
         "Content-Type":  "application/json",
     }
     payload = {
-        "model":      "claude-sonnet-4-6",
+        "model":      "claude-sonnet-4.6",
         "max_tokens": 50,
         "messages":   [{"role":"user","content":"قل: اتصال ناجح"}],
     }
@@ -63,7 +63,7 @@ else:
         "Content-Type":      "application/json",
     }
     payload = {
-        "model":      "claude-sonnet-4-6",
+        "model":      "claude-sonnet-4.6",
         "max_tokens": 50,
         "messages":   [{"role":"user","content":"قل: اتصال ناجح"}],
     }
