@@ -2244,7 +2244,7 @@ def _make_prompt(strat: str, results: dict, price: float) -> str:
             for nm,inf in v7.get("strats",{}).items()
         )
         tfs = ", ".join(tf+":"+("UP" if v==1 else "DN" if v==-1 else "--") for tf,v in v7.get("tf_v",{}).items())
-        return ("أنت محلل ذهب خبير. حلّل نتائج استراتيجية V7:\n\n"
+        return ("أنت محلل بيتكوين خبير. حلّل نتائج استراتيجية V7:\n\n"
                 "السعر: " + str(round(price,2)) + "\n"
                 "الإطارات: " + tfs + "\n"
                 "DXY: " + v7.get("dxy_txt","—") + "\n"
@@ -2293,7 +2293,7 @@ def _make_prompt(strat: str, results: dict, price: float) -> str:
 
     # analyze_ai or analyze_full
     votes = agg.get("votes",{})
-    return ("أنت محلل ذهب خبير. قدّم تحليلاً شاملاً:\n\n"
+    return ("أنت محلل بيتكوين خبير. قدّم تحليلاً شاملاً:\n\n"
             "السعر: " + str(round(price,2)) + "\n"
             "التوافق: " + str(agg.get("agree",0)) + "/5 | الثقة: " + str(agg.get("conf",0)) + "%\n"
             "الاتجاه: " + agg.get("lbl","—") + "\n"
