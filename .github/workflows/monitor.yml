@@ -1,0 +1,26 @@
+name: 📊 Monitor Health
+
+permissions:
+  contents: read
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 📢 Health Report
+        env:
+          TG_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TG_CHAT:  ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          LAST=$(cat .last_run 2>/dev/null || echo "غير معروف")
+          curl -s -X POST "https://api.telegram.org/bot${TG_TOKEN}/sendMessage" \
+            -d "chat_id=${TG_CHAT}" \
+            -d "text=📊 <b>تقرير صحة البوت</b>%0A✅ يعمل بشكل طبيعي%0A⏰ آخر تشغيل: ${LAST}%0A📅 $(date -u '+%Y-%m-%d %H:%M UTC')" \
+            -d "parse_mode=HTML" || true
