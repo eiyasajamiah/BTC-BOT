@@ -1639,7 +1639,7 @@ def analyze_range() -> dict:
 _AI_PROVIDERS = {
     "anthropic": {
         "url":     "https://api.anthropic.com/v1/messages",
-        "model":   cfg.get("CLAUDE_MODEL","") or "claude-sonnet-4-6",
+        "model":   cfg.get("CLAUDE_MODEL","") or "claude-sonnet-4.6",
         "headers": lambda key: {
             "x-api-key":           key,
             "anthropic-version":   "2023-06-01",
