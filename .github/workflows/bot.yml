@@ -36,7 +36,7 @@ jobs:
             "TELEGRAM_CHAT_ID": "$TELEGRAM_CHAT_ID",
             "CLAUDE_API_KEY": "$CLAUDE_API_KEY",
             "CLAUDE_PROVIDER": "$CLAUDE_PROVIDER",
-            "CLAUDE_MODEL": "claude-sonnet-4-6",
+            "CLAUDE_MODEL": "claude-sonnet-4.6",
             "SYMBOL": "BTC-USD",
             "DXY_SYMBOL": "DX-Y.NYB",
             "RUN_INTERVAL_MIN": 1,
