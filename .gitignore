@@ -1,0 +1,10 @@
+btc_config.json
+btc_subscribers.json
+btc_performance.json
+btc_ob_signals.json
+*.log
+logs/
+charts/
+__pycache__/
+*.pyc
+*.png
