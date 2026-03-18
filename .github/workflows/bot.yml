@@ -1,0 +1,103 @@
+name: 🟠 Bitcoin Bot v1.0 — يعمل 24/7
+
+permissions:
+  contents: write
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      - run: pip install -r requirements.txt
+
+      - name: 🔑 Build Config
+        env:
+          TELEGRAM_TOKEN:   ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          CLAUDE_API_KEY:   ${{ secrets.CLAUDE_API_KEY }}
+          CLAUDE_PROVIDER:  ${{ secrets.CLAUDE_PROVIDER }}
+        run: |
+          cat > btc_config.json << CFGEOF
+          {
+            "TELEGRAM_TOKEN":  "$TELEGRAM_TOKEN",
+            "TELEGRAM_CHAT_ID": "$TELEGRAM_CHAT_ID",
+            "CLAUDE_API_KEY":  "$CLAUDE_API_KEY",
+            "CLAUDE_PROVIDER": "${CLAUDE_PROVIDER:-auto}",
+            "CLAUDE_MODEL":    "",
+            "SYMBOL": "BTC-USD",
+            "DXY_SYMBOL": "DX-Y.NYB",
+            "RUN_INTERVAL_MIN": 1,
+            "DAILY_REPORT_HOUR_UTC": 20,
+            "TG_MAX_RETRIES": 4, "TG_TIMEOUT": 20,
+            "ATR_SL_MULT": 1.8, "ATR_TP_MULT": 3.5,
+            "MIN_STRATEGY_SCORE": 4, "MIN_TF_AGREE": 2, "MIN_RR": 1.5,
+            "SMC_MIN_SCORE": 4, "SMC_CANDLES": 100,
+            "OB_IMPULSE_ATR_MULT": 1.5, "OB_IMPULSE_CANDLES": 3,
+            "OB_MAX_AGE_BARS": 80, "OB_OVERLAP_MIN_PCT": 0.30,
+            "OB_TOUCH_BUFFER_PCT": 0.002, "OB_SL_BUFFER_PCT": 0.001,
+            "OB_MIN_RR": 1.8, "UNIFIED_MIN_AGREE": 2,
+            "PERF_FILE": "btc_performance.json",
+            "TRIGGER_PRICE_CHANGE_PCT": 0.15,
+            "TRIGGER_VOLUME_SPIKE_X": 2.0,
+            "TRIGGER_NEW_CANDLE_5M": true,
+            "TRIGGER_NEW_CANDLE_15M": true,
+            "TRIGGER_FORCE_EVERY_MIN": 3
+          }
+          CFGEOF
+          echo "✅ Provider=${CLAUDE_PROVIDER:-auto} | Key=${#CLAUDE_API_KEY}chars"
+
+      - uses: actions/cache@v4
+        with:
+          path: |
+            btc_subscribers.json
+            btc_performance.json
+            btc_ob_signals.json
+          key: btc-state-${{ github.run_number }}
+          restore-keys: btc-state-
+
+      - run: mkdir -p charts logs
+
+      - name: 🚀 Run Bot
+        run: timeout 330 python bitcoin_bot.py || true
+        env:
+          PYTHONUNBUFFERED: "1"
+
+      - uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: |
+            btc_subscribers.json
+            btc_performance.json
+            btc_ob_signals.json
+          key: btc-state-${{ github.run_number }}
+
+      - name: 🔄 Keep Alive
+        if: github.event_name == 'schedule'
+        run: |
+          git config user.email "btcbot@github.com"
+          git config user.name "Bitcoin Bot"
+          echo "$(date -u '+%Y-%m-%d %H:%M:%S UTC')" > .last_run
+          git add .last_run
+          git diff --staged --quiet || git commit -m "⏱ btc $(date -u '+%H:%M')"
+          git push || true
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: btc-logs-${{ github.run_number }}
+          path: logs/
+          retention-days: 7
